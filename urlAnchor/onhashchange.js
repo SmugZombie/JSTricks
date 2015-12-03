@@ -1,3 +1,5 @@
+// SmugZombie
+// github.com/smugzombie
 // Reloads the page on hash change
 
 if ("onhashchange" in window) { // event supported?
