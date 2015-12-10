@@ -10,7 +10,8 @@
 function getLocalStorage(name){ 
 	now = parseInt(new Date() / 1000);
 	expires = localStorage.getItem(name+"_expire");
-	if(now >= expires){ localStorage.removeItem(name+"_expire"); localStorage.removeItem(name); return ""; }
+	if(!expires){ return localStorage.getItem(name); }  
+    	else if(now >= expires){ localStorage.removeItem(name+"_expire"); localStorage.removeItem(name); return ""; }
 	else{ return localStorage.getItem(name); }	 
 }
 
