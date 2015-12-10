@@ -1,3 +1,12 @@
+// Set Local Storage Without Expiration
+// setLocalStorage("Hello", "World");
+
+// Set Local Storage With Expiration (in minutes)
+// setLocalStorage("Hello", "World", 15);
+
+// Unset Local Storage / Expire Local Storage for Item on demand, value is required but can be empty.
+// setLocalStorage("Hello", "", 0);
+
 function getLocalStorage(name){ 
 	now = parseInt(new Date() / 1000);
 	expires = localStorage.getItem(name+"_expire");
