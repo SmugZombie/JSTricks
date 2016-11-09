@@ -1,0 +1,127 @@
+<style>
+#commands-output {
+	margin: 0px 0px 30px 0px;
+}
+
+.command-output {
+	background-color: #000;
+	color: #C0C0C0;
+	padding: 5px;
+	outline: 5px solid #BBB;
+}
+</style>
+
+<textarea id="terminal" class="command-output" cols="91" rows="25" spellcheck="false">Ron's Custom Terminal
+
+C:\> </textarea>
+
+
+
+<script>
+	currentDirectory = "/";
+	function getLocalStorage(name){ 
+	    now = parseInt(new Date() / 1000);
+	    expires = localStorage.getItem(name+"_expire");
+	    if(!expires){ return localStorage.getItem(name); }  
+	    else if(now >= expires){ localStorage.removeItem(name+"_expire"); localStorage.removeItem(name); return ""; }
+	    else{ return localStorage.getItem(name); }   
+	}
+
+	function setLocalStorage(name, value, minutes){ 
+	    if(minutes == null){ localStorage.setItem(name, value); localStorage.removeItem(name+"_expire"); return true} // No set expiration
+	    else if(minutes == 0){ localStorage.removeItem(name); localStorage.removeItem(name+"_expire"); return true} // Setting to 0 kills the localStorage Item any any expiration
+	    else{ 
+	        epochExpire = parseInt(new Date() / 1000 + (minutes * 60));
+	        localStorage.setItem(name, value); localStorage.setItem(name+"_expire", epochExpire); 
+	        return true
+	    }
+	    return false
+	}
+
+	function validate(){
+		currentTerminal = terminal.value;
+		input = currentTerminal.replace(getLocalStorage("terminal"), "").trim().split(" ");
+		command = input[0];
+		input.shift();
+		parameters = input;
+		response = RunCommand(command, parameters);
+		currentTerminal = currentTerminal + response;
+
+
+
+		terminal.value = currentTerminal; //removeLastLine(currentTerminal);
+		terminal.value +=  "\nC:\\> ";
+		//terminal.value = terminal.value.trim();
+
+		
+		setLocalStorage("terminal", terminal.value, 10);
+		checkTextareaHeight();
+	}
+
+	function RunCommand(command, parameters){
+		switch(command) {
+			case "hello": response = "How are you?"; break
+			case "clear": terminal.value = ""; response = ""; break
+			case "pwd": response = window.currentDirectory; break
+			case "who": terminal.value = ""; response = "GOD"; break
+			case "passwd": response = "Uh.. No."; break
+			case "logout": case "reboot": case "shutdown": response = "Bye!"; case "exit": location.reload(); break
+			case "login": response = "you are already logged in as god..."; break
+			case "cd": if(changeDirectory(parameters)){ response = "cd "+changeDirectory(parameters); }else{ response = "file or directory not found";}; break
+			default: response = "Invalid Command : " + command;
+		}
+		return response;
+	}
+
+	function changeDirectory(directory){
+		currentDirectory = window.currentDirectory;
+		root_dirs = ["Program Files","Windows","Users","Temp"];
+
+		if(currentDirectory == "/"){
+			if(root_dirs.indexOf(directory)){
+				window.currentDirectory = directory;
+				return directory;
+			}
+			else{
+				return 0;
+			}
+		}
+	}
+
+	function checkTextareaHeight(){
+		var terminal = document.getElementById("terminal");
+		if(terminal.selectionStart == terminal.selectionEnd) {
+	   		terminal.scrollTop = terminal.scrollHeight;
+		}
+	}
+
+	function verifyTerminal(){
+		currentTerminal = terminal.value;
+
+		if(currentTerminal.includes(getLocalStorage("terminal"))){
+
+		}
+		else{
+			terminal.value = getLocalStorage("terminal");
+		}
+	}
+
+	function removeLastLine(x){
+		if(x.lastIndexOf("\n")>0) {
+		    return x.substring(0, x.lastIndexOf("\n"));
+		} else {
+		    return x;
+		}
+	}
+
+	document.getElementById("terminal").scrollTop = document.getElementById("terminal").scrollHeight
+	setLocalStorage("terminal", terminal.value, 10);
+
+	terminal.addEventListener("keyup", function (e) {
+	verifyTerminal();
+    if (e.keyCode === 13) { validate(); }
+	});
+
+	terminal.focus();
+	terminal.setSelectionRange(terminal.value.length, terminal.value.length);  
+</script>
